@@ -10,7 +10,8 @@ spring:
       host: ${SPRING_REDIS_HOST:localhost}
       port: ${SPRING_REDIS_PORT:6379}
       password: ${SPRING_REDIS_PASSWORD:}
-      ssl: ${SPRING_REDIS_SSL:true}
+      ssl:
+        enabled: ${SPRING_REDIS_SSL_ENABLED:false}
 
   cloud:
     gateway:
