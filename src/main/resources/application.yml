@@ -6,14 +6,15 @@ spring:
     name: api-gateway
 
   # -------------------
-  # Redis (secure via env vars)
+  # Redis (Upstash / Secure)
   # -------------------
   data:
     redis:
-      host: ${SPRING_REDIS_HOST}
-      port: ${SPRING_REDIS_PORT}
-      password: ${SPRING_REDIS_PASSWORD}
-      ssl: ${SPRING_REDIS_SSL:true}
+      host: ${SPRING_REDIS_HOST:localhost}
+      port: ${SPRING_REDIS_PORT:6379}
+      password: ${SPRING_REDIS_PASSWORD:}
+      ssl:
+        enabled: ${SPRING_REDIS_SSL:true}
 
   # -------------------
   # Gateway Configuration
@@ -51,7 +52,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL}
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
   instance:
     prefer-ip-address: true
     hostname: ${EUREKA_HOSTNAME:localhost}
@@ -71,3 +72,4 @@ resilience4j:
 logging:
   level:
     org.springframework.cloud.gateway: INFO
+    root: INFO
