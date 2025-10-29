@@ -10,17 +10,75 @@ spring:
       host: ${SPRING_REDIS_HOST:localhost}
       port: ${SPRING_REDIS_PORT:6379}
       password: ${SPRING_REDIS_PASSWORD:}
-      ssl:
-        enabled: ${SPRING_REDIS_SSL:true}
+      ssl: ${SPRING_REDIS_SSL:true}
 
   cloud:
     gateway:
-      redis:
-        enabled: true
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: userCircuitBreaker
+                fallbackUri: forward:/fallback/global
+
+        - id: contact-service
+          uri: lb://contact-service
+          predicates:
+            - Path=/contact-service/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: contactCircuitBreaker
+                fallbackUri: forward:/fallback/global
+
+        - id: quote-service
+          uri: lb://quote-service
+          predicates:
+            - Path=/quote-service/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: quoteCircuitBreaker
+                fallbackUri: forward:/fallback/global
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/notification-service/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: notificationCircuitBreaker
+                fallbackUri: forward:/fallback/global
+
+        - id: email-service
+          uri: lb://email-service
+          predicates:
+            - Path=/email-service/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: emailCircuitBreaker
+                fallbackUri: forward:/fallback/global
+
+        - id: channel-server
+          uri: lb://channel-server
+          predicates:
+            - Path=/channel-server/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: channelCircuitBreaker
+                fallbackUri: forward:/fallback/global
+
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -30,23 +88,6 @@ spring:
       default-filters:
         - AddResponseHeader=Access-Control-Allow-Origin, *
         - AddResponseHeader=Access-Control-Allow-Methods, GET,POST,PUT,DELETE,OPTIONS
-        - name: CircuitBreaker
-          args:
-            name: globalCircuitBreaker
-            fallbackUri: forward:/fallback/global
-        - name: RequestRateLimiter
-          args:
-            redis-rate-limiter.replenishRate: 5
-            redis-rate-limiter.burstCapacity: 10
-            key-resolver: "#{@ipKeyResolver}"
-
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
-  instance:
-    prefer-ip-address: true
-    hostname: ${EUREKA_HOSTNAME:localhost}
 
 resilience4j:
   circuitbreaker:
@@ -57,14 +98,12 @@ resilience4j:
         waitDurationInOpenState: 10s
         automaticTransitionFromOpenToHalfOpenEnabled: true
 
-management:
-  health:
-    redis:
-      enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: health,info
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:https://eureka-server-sk4j.onrender.com/eureka/}
+  instance:
+    prefer-ip-address: true
 
 logging:
   level:
