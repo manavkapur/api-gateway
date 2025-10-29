@@ -10,7 +10,8 @@ spring:
       host: ${SPRING_REDIS_HOST:localhost}
       port: ${SPRING_REDIS_PORT:6379}
       password: ${SPRING_REDIS_PASSWORD:}
-      ssl-enabled: ${SPRING_REDIS_SSL:true}
+      ssl:
+        enabled: ${SPRING_REDIS_SSL:true}
 
   cloud:
     gateway:
@@ -55,6 +56,15 @@ resilience4j:
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
         automaticTransitionFromOpenToHalfOpenEnabled: true
+
+management:
+  health:
+    redis:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
 
 logging:
   level:
