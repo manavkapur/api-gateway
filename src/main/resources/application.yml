@@ -14,6 +14,10 @@ spring:
         enabled: ${SPRING_REDIS_SSL_ENABLED:false}
 
   cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+
     gateway:
       discovery:
         locator:
@@ -105,6 +109,8 @@ eureka:
       defaultZone: ${EUREKA_URL:https://eureka-server-sk4j.onrender.com/eureka/}
   instance:
     prefer-ip-address: true
+    hostname: ${spring.application.name}
+    instance-id: ${spring.application.name}:${random.value}
 
 logging:
   level:
