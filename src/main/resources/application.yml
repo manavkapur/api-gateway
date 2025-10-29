@@ -5,20 +5,13 @@ spring:
   application:
     name: api-gateway
 
-  # -------------------
-  # Redis (Upstash / Secure)
-  # -------------------
   data:
     redis:
       host: ${SPRING_REDIS_HOST:localhost}
       port: ${SPRING_REDIS_PORT:6379}
       password: ${SPRING_REDIS_PASSWORD:}
-      ssl:
-        enabled: ${SPRING_REDIS_SSL:true}
+      ssl-enabled: ${SPRING_REDIS_SSL:true}
 
-  # -------------------
-  # Gateway Configuration
-  # -------------------
   cloud:
     gateway:
       redis:
@@ -46,9 +39,6 @@ spring:
             redis-rate-limiter.burstCapacity: 10
             key-resolver: "#{@ipKeyResolver}"
 
-# -------------------
-# Eureka (Hosted)
-# -------------------
 eureka:
   client:
     service-url:
@@ -57,9 +47,6 @@ eureka:
     prefer-ip-address: true
     hostname: ${EUREKA_HOSTNAME:localhost}
 
-# -------------------
-# Resilience4j (Circuit Breaker)
-# -------------------
 resilience4j:
   circuitbreaker:
     instances:
