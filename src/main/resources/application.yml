@@ -79,7 +79,6 @@ spring:
           predicates:
             - Path=/channel-server/**
           filters:
-            - StripPrefix=1   # 👈 removes '/channel-server' before forwarding
             - name: CircuitBreaker
               args:
                 name: channelCircuitBreaker
