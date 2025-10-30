@@ -31,6 +31,8 @@ spring:
             allowedOriginPatterns:
               - "http://localhost:3000"
               - "https://supremebuildsolutions.vercel.app"
+              - "https://supremebuildsolutions.com"
+              - "https://www.supremebuildsolutions.com"   # ✅ Add this line
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
