@@ -41,6 +41,13 @@ spring:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 
       routes:
+        - - id: channel-server-ws
+        - uri: lb://channel-server
+        - predicates:
+        - Path=/ws/**
+        - filters:
+        - name: PreserveHostHeader
+
         - id: user-service
           uri: lb://user-service
           predicates:
@@ -100,6 +107,7 @@ spring:
               args:
                 name: channelCircuitBreaker
                 fallbackUri: forward:/fallback/global
+
 
 resilience4j:
   circuitbreaker:
