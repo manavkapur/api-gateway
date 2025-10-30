@@ -37,7 +37,8 @@ spring:
 
       # ✅ Replace AddResponseHeader with DedupeResponseHeader
       default-filters:
-        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials,Vary
+        # ✅ Deduplicate only, keep the first occurrence
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 
       routes:
         - id: user-service
