@@ -23,6 +23,22 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+
+      # ✅ Remove '*' origins — handled in CorsWebFilter
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - "http://localhost:3000"
+              - "https://supremebuildsolutions.vercel.app"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+
+      # ✅ Replace AddResponseHeader with DedupeResponseHeader
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials,Vary
+
       routes:
         - id: user-service
           uri: lb://user-service
@@ -83,16 +99,6 @@ spring:
               args:
                 name: channelCircuitBreaker
                 fallbackUri: forward:/fallback/global
-
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
-      default-filters:
-        - AddResponseHeader=Access-Control-Allow-Origin, *
-        - AddResponseHeader=Access-Control-Allow-Methods, GET,POST,PUT,DELETE,OPTIONS
 
 resilience4j:
   circuitbreaker:
