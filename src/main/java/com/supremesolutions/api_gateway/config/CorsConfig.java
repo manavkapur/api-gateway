@@ -19,7 +19,9 @@ public class CorsConfig {
         // ✅ Allowed frontend origins
         corsConfig.setAllowedOriginPatterns(Arrays.asList(
                 "https://supremebuildsolutions.vercel.app",
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "https://supremebuildsolutions.com",
+                "https://www.supremebuildsolutions.com"
         ));
 
         // ✅ Allow methods and headers
