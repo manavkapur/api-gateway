@@ -127,11 +127,13 @@ eureka:
       # ✅ Your Cloud Eureka
       defaultZone: ${EUREKA_URL:https://eureka-server-142422750329.asia-southeast1.run.app/eureka/}
 
-    # ✅ Add resilience (won’t crash if Eureka is slow)
+    # ✅ Make Eureka refresh and renew heartbeats frequently
+    registry-fetch-interval-seconds: 10
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
     eureka-server-connect-timeout-seconds: 5
     eureka-server-read-timeout-seconds: 8
     initial-instance-info-replication-interval-seconds: 5
-    registry-fetch-interval-seconds: 5
     serviceUrlPollIntervalSeconds: 60
 
   instance:
@@ -143,6 +145,8 @@ eureka:
     secure-port-enabled: true
     status-page-url: https://${CLOUD_RUN_HOST:api-gateway-142422750329.asia-southeast1.run.app}/actuator/health
     health-check-url: https://${CLOUD_RUN_HOST:api-gateway-142422750329.asia-southeast1.run.app}/actuator/health
+    metadata-map:
+      management.port: ${server.port}
 
 logging:
   level:
