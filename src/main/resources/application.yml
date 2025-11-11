@@ -59,6 +59,7 @@ spring:
           uri: https://user-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/user-service/**
+            - Method=GET,POST,PUT,DELETE,OPTIONS   # ✅ Add this
           filters:
             - StripPrefix=1
             - name: CircuitBreaker
