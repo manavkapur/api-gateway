@@ -27,10 +27,6 @@ public class ReactorClientConnectorConfig {
         return new ReactorClientHttpConnector(secureHttpClient);
     }
 
-    /**
-     * ✅ Optional: provide a secure WebClient (used internally by Gateway)
-     * Ensures both manual and automatic service calls use HTTPS.
-     */
     @Bean
     public WebClient secureWebClient(ReactorClientHttpConnector connector) {
         return WebClient.builder()
