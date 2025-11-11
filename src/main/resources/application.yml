@@ -32,7 +32,7 @@ spring:
               - "http://localhost:3000"
               - "https://supremebuildsolutions.vercel.app"
               - "https://supremebuildsolutions.com"
-              - "https://www.supremebuildsolutions.com"   # ✅ Add this line
+              - "https://www.supremebuildsolutions.com"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
@@ -41,6 +41,7 @@ spring:
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 
+      # ✅ Routes with StripPrefix=1 so /user-service/api/... works
       routes:
         - id: channel-server-ws
           uri: lb://channel-server
@@ -54,6 +55,7 @@ spring:
           predicates:
             - Path=/user-service/**
           filters:
+            - StripPrefix=1        # 👈 removes /user-service before forwarding
             - name: CircuitBreaker
               args:
                 name: userCircuitBreaker
@@ -64,6 +66,7 @@ spring:
           predicates:
             - Path=/contact-service/**
           filters:
+            - StripPrefix=1
             - name: CircuitBreaker
               args:
                 name: contactCircuitBreaker
@@ -74,6 +77,7 @@ spring:
           predicates:
             - Path=/quote-service/**
           filters:
+            - StripPrefix=1
             - name: CircuitBreaker
               args:
                 name: quoteCircuitBreaker
@@ -84,6 +88,7 @@ spring:
           predicates:
             - Path=/notification-service/**
           filters:
+            - StripPrefix=1
             - name: CircuitBreaker
               args:
                 name: notificationCircuitBreaker
@@ -94,6 +99,7 @@ spring:
           predicates:
             - Path=/email-service/**
           filters:
+            - StripPrefix=1
             - name: CircuitBreaker
               args:
                 name: emailCircuitBreaker
@@ -104,6 +110,7 @@ spring:
           predicates:
             - Path=/channel-server/**
           filters:
+            - StripPrefix=1
             - name: CircuitBreaker
               args:
                 name: channelCircuitBreaker
@@ -121,7 +128,8 @@ resilience4j:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL:https://eureka-server-sk4j.onrender.com/eureka/}
+      # ✅ Updated to your GCP Eureka instance
+      defaultZone: ${EUREKA_URL:https://eureka-server-142422750329.asia-southeast1.run.app/eureka/}
   instance:
     prefer-ip-address: true
     hostname: ${spring.application.name}
