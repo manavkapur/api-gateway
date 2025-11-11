@@ -10,6 +10,7 @@ spring:
 
   main:
     web-application-type: reactive  # ✅ Force reactive Netty mode for Cloud Run
+    allow-bean-definition-overriding: true  # ✅ Avoid bean conflict between SSL configs
 
   codec:
     max-in-memory-size: 5MB   # ✅ Fix for POST JSON body buffering (prevents 500 errors)
@@ -36,7 +37,7 @@ spring:
           enabled: true
           lower-case-service-id: true
 
-      # ✅ Global CORS configuration
+      # ✅ Global CORS configuration (full fix for 405/OPTIONS)
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -45,7 +46,13 @@ spring:
               - "https://supremebuildsolutions.vercel.app"
               - "https://supremebuildsolutions.com"
               - "https://www.supremebuildsolutions.com"
-            allowedMethods: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
             allowedHeaders: "*"
             allowCredentials: true
 
@@ -53,13 +60,12 @@ spring:
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 
-      # ✅ Direct HTTPS routes to Cloud Run microservices (prevents SSL/TLS mismatch)
+      # ✅ Direct HTTPS routes to Cloud Run microservices
       routes:
         - id: user-service
           uri: https://user-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/user-service/**
-            - Method=GET,POST,PUT,DELETE,OPTIONS   # ✅ Add this
           filters:
             - StripPrefix=1
             - name: CircuitBreaker
