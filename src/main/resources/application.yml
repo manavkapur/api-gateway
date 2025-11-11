@@ -1,9 +1,18 @@
 server:
   port: ${PORT:8080} # ✅ Cloud Run sets PORT automatically
+  error:
+    include-message: always
+    include-binding-errors: always
 
 spring:
   application:
     name: api-gateway
+
+  main:
+    web-application-type: reactive  # ✅ Force reactive Netty mode for Cloud Run
+
+  codec:
+    max-in-memory-size: 5MB   # ✅ Fix for POST JSON body buffering (prevents 500 errors)
 
   data:
     redis:
@@ -138,7 +147,6 @@ eureka:
 
   instance:
     prefer-ip-address: false
-    # ✅ Only the hostname (no https://)
     hostname: ${CLOUD_RUN_HOST:api-gateway-142422750329.asia-southeast1.run.app}
     instance-id: ${spring.application.name}:${random.value}
     non-secure-port-enabled: false
@@ -148,7 +156,7 @@ eureka:
     metadata-map:
       management.port: ${server.port}
 
-# ---------- MANAGEMENT / ACTUATOR (health tuning for Cloud Run) ----------
+# ---------- MANAGEMENT / ACTUATOR ----------
 management:
   endpoints:
     web:
@@ -158,8 +166,6 @@ management:
     health:
       show-details: always
 
-  # Disable specific health contributors that commonly cause the gateway to be reported DOWN
-  # in ephemeral environments where Redis/Eureka may be unavailable or slow at startup.
   health:
     redis:
       enabled: false
@@ -173,4 +179,5 @@ management:
 logging:
   level:
     org.springframework.cloud.gateway: INFO
+    org.springframework.web.reactive.function.client.ExchangeFunctions: DEBUG
     root: INFO
