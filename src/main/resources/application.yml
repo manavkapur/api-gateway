@@ -148,6 +148,28 @@ eureka:
     metadata-map:
       management.port: ${server.port}
 
+# ---------- MANAGEMENT / ACTUATOR (health tuning for Cloud Run) ----------
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics, env
+  endpoint:
+    health:
+      show-details: always
+
+  # Disable specific health contributors that commonly cause the gateway to be reported DOWN
+  # in ephemeral environments where Redis/Eureka may be unavailable or slow at startup.
+  health:
+    redis:
+      enabled: false
+    discovery:
+      enabled: false
+    circuitbreakers:
+      enabled: false
+    refresh:
+      enabled: false
+
 logging:
   level:
     org.springframework.cloud.gateway: INFO
