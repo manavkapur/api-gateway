@@ -50,10 +50,10 @@ spring:
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 
-      # ✅ Routes with StripPrefix=1 so /user-service/api/... works
+      # ✅ Direct HTTPS routes to Cloud Run microservices (prevents SSL/TLS mismatch)
       routes:
         - id: user-service
-          uri: lb://user-service
+          uri: https://user-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/user-service/**
           filters:
@@ -64,7 +64,7 @@ spring:
                 fallbackUri: forward:/fallback/global
 
         - id: contact-service
-          uri: lb://contact-service
+          uri: https://contact-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/contact-service/**
           filters:
@@ -75,7 +75,7 @@ spring:
                 fallbackUri: forward:/fallback/global
 
         - id: quote-service
-          uri: lb://quote-service
+          uri: https://quote-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/quote-service/**
           filters:
@@ -86,7 +86,7 @@ spring:
                 fallbackUri: forward:/fallback/global
 
         - id: notification-service
-          uri: lb://notification-service
+          uri: https://notification-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/notification-service/**
           filters:
@@ -97,7 +97,7 @@ spring:
                 fallbackUri: forward:/fallback/global
 
         - id: email-service
-          uri: lb://email-service
+          uri: https://email-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/email-service/**
           filters:
@@ -108,7 +108,7 @@ spring:
                 fallbackUri: forward:/fallback/global
 
         - id: channel-server
-          uri: lb://channel-server
+          uri: https://channel-server-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/channel-server/**
           filters:
@@ -133,7 +133,6 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      # ✅ Your Cloud Eureka
       defaultZone: ${EUREKA_URL:https://eureka-server-142422750329.asia-southeast1.run.app/eureka/}
 
     # ✅ Make Eureka refresh and renew heartbeats frequently
