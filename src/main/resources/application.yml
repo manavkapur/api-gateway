@@ -66,13 +66,14 @@ spring:
           uri: https://user-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/user-service/**
-            - Method=GET,POST,PUT,DELETE,OPTIONS
           filters:
-            - StripPrefix=1
+            - RewritePath=/user-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
               args:
                 name: userCircuitBreaker
                 fallbackUri: forward:/fallback/global
+
+
 
         - id: contact-service
           uri: https://contact-service-142422750329.asia-southeast1.run.app
