@@ -1,7 +1,7 @@
 package com.supremesolutions.api_gateway.config;
 
-import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import org.springframework.cloud.gateway.config.HttpClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -11,20 +11,32 @@ import reactor.netty.http.client.HttpClient;
 import javax.net.ssl.SSLException;
 
 /**
- * ✅ Ensures Spring Cloud Gateway & WebClient use a secure HTTPS (TLS) client
- * for all outbound Cloud Run requests. Fixes "not an SSL/TLS record" issue.
+ * ✅ Forces Spring Cloud Gateway & WebClient to use HTTPS (TLS)
+ * for all outbound calls (Cloud Run → Cloud Run).
  */
 @Configuration
 public class ReactorClientConnectorConfig {
 
     @Bean
-    public ReactorClientHttpConnector reactorClientHttpConnector() throws SSLException {
-        SslContext sslContext = SslContextBuilder.forClient().build();
+    public HttpClientCustomizer secureHttpClientCustomizer() {
+        return httpClient -> httpClient.secure(ssl -> {
+            try {
+                ssl.sslContext(SslContextBuilder.forClient().build());
+            } catch (SSLException e) {
+                throw new RuntimeException("Failed to configure SSL", e);
+            }
+        });
+    }
 
-        HttpClient secureHttpClient = HttpClient.create()
-                .secure(ssl -> ssl.sslContext(sslContext));
-
-        return new ReactorClientHttpConnector(secureHttpClient);
+    @Bean
+    public ReactorClientHttpConnector reactorClientHttpConnector() {
+        try {
+            HttpClient secureClient = HttpClient.create()
+                    .secure(ssl -> ssl.sslContext(SslContextBuilder.forClient().build()));
+            return new ReactorClientHttpConnector(secureClient);
+        } catch (SSLException e) {
+            throw new RuntimeException("Failed to configure ReactorClientHttpConnector", e);
+        }
     }
 
     @Bean
