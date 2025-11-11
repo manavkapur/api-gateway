@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${PORT:8080} # ✅ Cloud Run sets PORT automatically
 
 spring:
   application:
@@ -43,19 +43,12 @@ spring:
 
       # ✅ Routes with StripPrefix=1 so /user-service/api/... works
       routes:
-        - id: channel-server-ws
-          uri: lb://channel-server
-          predicates:
-            - Path=/ws/**
-          filters:
-            - name: PreserveHostHeader
-
         - id: user-service
           uri: lb://user-service
           predicates:
             - Path=/user-service/**
           filters:
-            - StripPrefix=1        # 👈 removes /user-service before forwarding
+            - StripPrefix=1
             - name: CircuitBreaker
               args:
                 name: userCircuitBreaker
@@ -125,15 +118,31 @@ resilience4j:
         waitDurationInOpenState: 10s
         automaticTransitionFromOpenToHalfOpenEnabled: true
 
+# ---------- EUREKA ----------
 eureka:
   client:
+    fetch-registry: true
+    register-with-eureka: true
     service-url:
-      # ✅ Updated to your GCP Eureka instance
+      # ✅ Your Cloud Eureka
       defaultZone: ${EUREKA_URL:https://eureka-server-142422750329.asia-southeast1.run.app/eureka/}
+
+    # ✅ Add resilience (won’t crash if Eureka is slow)
+    eureka-server-connect-timeout-seconds: 5
+    eureka-server-read-timeout-seconds: 8
+    initial-instance-info-replication-interval-seconds: 5
+    registry-fetch-interval-seconds: 5
+    serviceUrlPollIntervalSeconds: 60
+
   instance:
-    prefer-ip-address: true
-    hostname: ${spring.application.name}
+    prefer-ip-address: false
+    # ✅ Only the hostname (no https://)
+    hostname: ${CLOUD_RUN_HOST:api-gateway-142422750329.asia-southeast1.run.app}
     instance-id: ${spring.application.name}:${random.value}
+    non-secure-port-enabled: false
+    secure-port-enabled: true
+    status-page-url: https://${CLOUD_RUN_HOST:api-gateway-142422750329.asia-southeast1.run.app}/actuator/health
+    health-check-url: https://${CLOUD_RUN_HOST:api-gateway-142422750329.asia-southeast1.run.app}/actuator/health
 
 logging:
   level:
