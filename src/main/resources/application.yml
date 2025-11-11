@@ -61,6 +61,7 @@ spring:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 
       # ✅ Direct HTTPS routes to Cloud Run microservices
+      # ✅ Direct HTTPS routes to Cloud Run microservices (consistent RewritePath for each)
       routes:
         - id: user-service
           uri: https://user-service-142422750329.asia-southeast1.run.app
@@ -73,14 +74,12 @@ spring:
                 name: userCircuitBreaker
                 fallbackUri: forward:/fallback/global
 
-
-
         - id: contact-service
           uri: https://contact-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/contact-service/**
           filters:
-            - StripPrefix=1
+            - RewritePath=/contact-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
               args:
                 name: contactCircuitBreaker
@@ -90,8 +89,9 @@ spring:
           uri: https://quote-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/quote-service/**
+            - Method=GET,POST,PUT,DELETE,OPTIONS
           filters:
-            - StripPrefix=1
+            - RewritePath=/quote-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
               args:
                 name: quoteCircuitBreaker
@@ -101,8 +101,9 @@ spring:
           uri: https://notification-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/notification-service/**
+            - Method=GET,POST,PUT,DELETE,OPTIONS
           filters:
-            - StripPrefix=1
+            - RewritePath=/notification-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
               args:
                 name: notificationCircuitBreaker
@@ -112,8 +113,9 @@ spring:
           uri: https://email-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/email-service/**
+            - Method=GET,POST,PUT,DELETE,OPTIONS
           filters:
-            - StripPrefix=1
+            - RewritePath=/email-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
               args:
                 name: emailCircuitBreaker
@@ -123,12 +125,14 @@ spring:
           uri: https://channel-server-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/channel-server/**
+            - Method=GET,POST,PUT,DELETE,OPTIONS
           filters:
-            - StripPrefix=1
+            - RewritePath=/channel-server/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
               args:
                 name: channelCircuitBreaker
                 fallbackUri: forward:/fallback/global
+
 
 resilience4j:
   circuitbreaker:
