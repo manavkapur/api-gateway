@@ -28,6 +28,9 @@ spring:
         enabled: false
 
     gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 10s
       discovery:
         locator:
           enabled: true
