@@ -85,10 +85,10 @@ spring:
         - id: quote-service
           uri: https://quote-service-142422750329.asia-southeast1.run.app
           predicates:
-            - Path=/quote-service/{segment}/**   # ✅ exact matcher
+            - Path=/quote-service/{path}/**
           filters:
             - PreserveHostHeader
-            - RewritePath=/quote-service/(?<segment>.*), /${segment}
+            - RewritePath=/quote-service/(?<path>.*), /${path}
             - name: CircuitBreaker
               args:
                 name: quoteCircuitBreaker
