@@ -89,7 +89,6 @@ spring:
           uri: https://quote-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/quote-service/**
-            - Method=GET,POST,PUT,DELETE,OPTIONS
           filters:
             - RewritePath=/quote-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
