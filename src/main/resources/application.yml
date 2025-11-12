@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8080} # ✅ Cloud Run sets PORT automatically
+  port: ${PORT:8080}
   error:
     include-message: always
     include-binding-errors: always
@@ -9,11 +9,11 @@ spring:
     name: api-gateway
 
   main:
-    web-application-type: reactive  # ✅ Force reactive Netty mode for Cloud Run
-    allow-bean-definition-overriding: true  # ✅ Avoid bean conflict between SSL configs
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
 
   codec:
-    max-in-memory-size: 5MB   # ✅ Fix for POST JSON body buffering (prevents 500 errors)
+    max-in-memory-size: 5MB
 
   data:
     redis:
@@ -32,12 +32,13 @@ spring:
       httpclient:
         connect-timeout: 5000
         response-timeout: 10s
+
       discovery:
         locator:
           enabled: false
           lower-case-service-id: true
 
-      # ✅ Global CORS configuration (full fix for 405/OPTIONS)
+      # ✅ Full Global CORS – works with iOS + Web + Postman
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -46,22 +47,15 @@ spring:
               - "https://supremebuildsolutions.vercel.app"
               - "https://supremebuildsolutions.com"
               - "https://www.supremebuildsolutions.com"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - PATCH
-              - OPTIONS
+            allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
 
-      # ✅ Deduplicate headers to prevent duplicate CORS entries
+      # ✅ Prevent duplicate CORS headers
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 
-      # ✅ Direct HTTPS routes to Cloud Run microservices
-      # ✅ Direct HTTPS routes to Cloud Run microservices (consistent RewritePath for each)
+      # ✅ Microservice routes — all HTTP methods accepted
       routes:
         - id: user-service
           uri: https://user-service-142422750329.asia-southeast1.run.app
@@ -100,7 +94,6 @@ spring:
           uri: https://notification-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/notification-service/**
-            - Method=GET,POST,PUT,DELETE,OPTIONS
           filters:
             - RewritePath=/notification-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
@@ -112,7 +105,6 @@ spring:
           uri: https://email-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/email-service/**
-            - Method=GET,POST,PUT,DELETE,OPTIONS
           filters:
             - RewritePath=/email-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
@@ -124,14 +116,12 @@ spring:
           uri: https://channel-server-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/channel-server/**
-            - Method=GET,POST,PUT,DELETE,OPTIONS
           filters:
             - RewritePath=/channel-server/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
               args:
                 name: channelCircuitBreaker
                 fallbackUri: forward:/fallback/global
-
 
 resilience4j:
   circuitbreaker:
@@ -149,8 +139,6 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: ${EUREKA_URL:https://eureka-server-142422750329.asia-southeast1.run.app/eureka/}
-
-    # ✅ Make Eureka refresh and renew heartbeats frequently
     registry-fetch-interval-seconds: 10
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
@@ -170,7 +158,6 @@ eureka:
     metadata-map:
       management.port: ${server.port}
 
-# ---------- MANAGEMENT / ACTUATOR ----------
 management:
   endpoints:
     web:
@@ -179,7 +166,6 @@ management:
   endpoint:
     health:
       show-details: always
-
   health:
     redis:
       enabled: false
