@@ -63,9 +63,9 @@ spring:
         - id: user-service
           uri: https://user-service-142422750329.asia-southeast1.run.app
           predicates:
-            - Path=/user-service/**
+            - Path=/user-service/api/**
           filters:
-            - RewritePath=/user-service/(?<path>.*), /${path}
+            - RewritePath=/user-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
               args:
                 name: userCircuitBreaker
