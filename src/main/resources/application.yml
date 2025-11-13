@@ -127,6 +127,13 @@ spring:
                 name: channelCircuitBreaker
                 fallbackUri: forward:/fallback/global
 
+        - id: channel-ws
+          uri: https://channel-server-142422750329.asia-southeast1.run.app
+          predicates:
+            - Path=/ws/**
+          filters:
+            - RewritePath=/ws/(?<remaining>.*), /ws/${remaining}
+
 resilience4j:
   circuitbreaker:
     instances:
