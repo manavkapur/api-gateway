@@ -93,21 +93,20 @@ spring:
           filters:
             - SetStatus=200
             - AddResponseHeader=Access-Control-Allow-Origin, *
-            - AddResponseHeader=Access-Control-Allow-Methods, GET,POST,PUT,DELETE,OPTIONS
-            - AddResponseHeader=Access-Control-Allow-Headers, *
+
 
         # ✅ FIXED: correct rewrite for /api/quotes paths
         - id: quote-service
           uri: https://quote-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/quote-service/**
-            - Method=GET,POST,PUT,DELETE
           filters:
             - RewritePath=/quote-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
               args:
                 name: quoteCircuitBreaker
                 fallbackUri: forward:/fallback/global
+        
 
         - id: notification-service
           uri: https://notification-service-142422750329.asia-southeast1.run.app
