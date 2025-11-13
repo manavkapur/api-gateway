@@ -119,9 +119,9 @@ spring:
         - id: channel-server
           uri: https://channel-server-142422750329.asia-southeast1.run.app
           predicates:
-            - Path=/channel-server/**
+            - Path=/channel-server/api/**
           filters:
-            - RewritePath=/channel-server/(?<path>.*), /${path}
+            - RewritePath=/channel-server/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
               args:
                 name: channelCircuitBreaker
