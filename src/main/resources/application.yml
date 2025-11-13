@@ -83,6 +83,7 @@ spring:
                 name: contactCircuitBreaker
                 fallbackUri: forward:/fallback/global
 
+
         # 💥 FIX OPTIONS preflight once and for all
         - id: quote-service-cors
           uri: no://op
@@ -100,11 +101,7 @@ spring:
           uri: https://quote-service-142422750329.asia-southeast1.run.app
           predicates:
             - Path=/quote-service/**
-            - Method=GET
-            - Method=POST
-            - Method=PUT
-            - Method=DELETE
-            - Method=OPTIONS
+            - Method=GET,POST,PUT,DELETE
           filters:
             - RewritePath=/quote-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
