@@ -29,8 +29,8 @@ spring:
         enabled: false
 
     gateway:
-      preserve-host-header: true           # ✅ add here
-      forwarded-headers-strategy: FRAMEWORK  # ✅ add here
+      preserve-host-header: true
+      forwarded-headers-strategy: FRAMEWORK
 
       httpclient:
         connect-timeout: 5000
@@ -41,7 +41,7 @@ spring:
           enabled: false
           lower-case-service-id: true
 
-      # ✅ Full Global CORS – works with iOS + Web + Postman
+      # ✅ Full Global CORS – iOS + Web + Postman
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -54,11 +54,11 @@ spring:
             allowedHeaders: "*"
             allowCredentials: true
 
-      # ✅ Prevent duplicate CORS headers
+      # ✅ Prevent duplicate headers
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 
-      # ✅ Microservice routes — all HTTP methods accepted
+      # ✅ ROUTES
       routes:
         - id: user-service
           uri: https://user-service-142422750329.asia-southeast1.run.app
@@ -82,13 +82,13 @@ spring:
                 name: contactCircuitBreaker
                 fallbackUri: forward:/fallback/global
 
+        # ✅ FIXED: correct rewrite for /api/quotes paths
         - id: quote-service
           uri: https://quote-service-142422750329.asia-southeast1.run.app
           predicates:
-            - Path=/quote-service/{path}/**
+            - Path=/quote-service/api/**
           filters:
-            - PreserveHostHeader
-            - RewritePath=/quote-service/(?<path>.*), /${path}
+            - RewritePath=/quote-service/(?<remaining>.*), /${remaining}
             - name: CircuitBreaker
               args:
                 name: quoteCircuitBreaker
@@ -136,7 +136,6 @@ resilience4j:
         waitDurationInOpenState: 10s
         automaticTransitionFromOpenToHalfOpenEnabled: true
 
-# ---------- EUREKA ----------
 eureka:
   client:
     fetch-registry: true
