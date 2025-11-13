@@ -65,7 +65,7 @@ spring:
           predicates:
             - Path=/user-service/**
           filters:
-            - RewritePath=/user-service/(?<remaining>.*), /${remaining}
+            - RewritePath=/user-service/(?<path>.*), /${path}
             - name: CircuitBreaker
               args:
                 name: userCircuitBreaker
@@ -76,7 +76,7 @@ spring:
           predicates:
             - Path=/contact-service/**
           filters:
-            - RewritePath=/contact-service/(?<remaining>.*), /${remaining}
+            - RewritePath=/contact-service/(?<path>.*), /${path}
             - name: CircuitBreaker
               args:
                 name: contactCircuitBreaker
@@ -99,7 +99,7 @@ spring:
           predicates:
             - Path=/notification-service/**
           filters:
-            - RewritePath=/notification-service/(?<remaining>.*), /${remaining}
+            - RewritePath=/notification-service/(?<path>.*), /${path}
             - name: CircuitBreaker
               args:
                 name: notificationCircuitBreaker
@@ -110,7 +110,7 @@ spring:
           predicates:
             - Path=/email-service/**
           filters:
-            - RewritePath=/email-service/(?<remaining>.*), /${remaining}
+            - RewritePath=/email-service/(?<path>.*), /${path}
             - name: CircuitBreaker
               args:
                 name: emailCircuitBreaker
@@ -121,7 +121,7 @@ spring:
           predicates:
             - Path=/channel-server/**
           filters:
-            - RewritePath=/channel-server/(?<remaining>.*), /${remaining}
+            - RewritePath=/channel-server/(?<path>.*), /${path}
             - name: CircuitBreaker
               args:
                 name: channelCircuitBreaker
